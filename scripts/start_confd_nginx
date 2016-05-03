@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+ETCD_PORT=${ETCD_PORT:-4001}
+ETCD_IP=${ETCD_IP:-172.17.42.1}
+ETCD=$ETCD_IP:$ETCD_PORT
+
+# Loop until confd has updated the nginx config
+until confd -backend etcd -onetime -node $ETCD -config-file /etc/confd/conf.d/nginx.toml; do
+  echo "Waiting for confd to update /etc/nginx.conf..."
+  sleep 5
+done
+
+echo "Starting confd and nginx..."
+
+confd -backend etcd -interval 30 -node $ETCD > /dev/stdout 2>&1 &
+nginx
