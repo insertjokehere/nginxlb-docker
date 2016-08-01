@@ -19,6 +19,7 @@ http {
         server_name {{base $app}};
         {{ range $upstream := lsdir $upstream_dir }}
         {{ $path := printf "/lb/http/%s/upstreams/%s/path" $app $upstream }}
+        {{$custom := printf "/lb/http/%s/upstreams/%s/custom" $app $upstream }}
         location {{ getv $path }} {
              proxy_http_version 1.1;
              proxy_set_header Upgrade $http_upgrade;
@@ -29,6 +30,10 @@ http {
              proxy_next_upstream off;
 
              proxy_pass http://{{base $app}}_{{base $upstream}};
+
+             {{ if exists $custom }}
+	     {{ getv $custom }}
+	     {{ end }}
         }
         {{ end }}
     }
