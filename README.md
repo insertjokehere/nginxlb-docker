@@ -24,7 +24,7 @@ ExecStop=/usr/bin/docker kill nginx-lb
 [X-Fleet]
 Global=true```
 
-Then create a sidekick unit for each service that needs connections routed to it. For example, to serve api.testapi.skydns.local:5000 as http://api.example.com/. The value of the `/lb/http/api.example.com/upstreams/root/backends/api` key points at a DNS SRV record that is used to look up the IP and port of the service
+Then create a sidekick unit for each service that needs connections routed to it. For example, to serve api.testapi.skydns.local:5000 as http://api.example.com/
 
 ```[Unit]
 Description=api service register
@@ -34,7 +34,7 @@ After=api.service
 [Service]
 RemainAfterExit=yes
 ExecStart=/bin/sh -c "while true; do /bin/etcdctl set \"/lb/http/api.example.com/upstreams/root/path\" / --ttl 60; \
- /bin/etcdctl set \"/lb/http/api.example.com/upstreams/root/backends/api\" api.testapi.skydns.local --ttl 60; sleep 30; done"
+ /bin/etcdctl set \"/lb/http/api.example.com/upstreams/root/backends/api\" api.testapi.skydns.local:5000 --ttl 60; sleep 30; done"
 
 [X-Fleet]
 X-ConditionMachineOf=api.service```
