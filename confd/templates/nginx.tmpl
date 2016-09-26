@@ -43,7 +43,10 @@ http {
     {{range $upstream := lsdir $upstream_dir}}
     upstream {{base $app}}_{{base $upstream}} { {{$backend_dir := printf "/lb/http/%s/upstreams/%s/backends/*" $app $upstream }}
         {{range $backend := gets $backend_dir }}
-        server {{.Value}};  # {{.Key}}{{end}}
+	{{range lookupSRV "" "" .Value}}
+	server {{.Target}}:{{.Port}};
+	{{end}}
+        {{end}}
     }
     {{end}}{{end}}
 }
