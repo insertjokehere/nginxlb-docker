@@ -14,5 +14,5 @@ done
 
 echo "Starting confd and nginx..."
 
-confd -backend etcd -interval 30 -node $ETCD > /dev/stdout 2>&1 &
+confd -backend etcd -interval 5 -node $ETCD > /dev/stdout 2>&1 &
 nginx
